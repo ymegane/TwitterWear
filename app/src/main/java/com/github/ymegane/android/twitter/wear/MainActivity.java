@@ -1,10 +1,13 @@
 package com.github.ymegane.android.twitter.wear;
 
+import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.BoxInsetLayout;
 import android.view.View;
-import android.widget.TextView;
+
+import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
+import com.twitter.sdk.android.core.TwitterSession;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,19 +18,26 @@ public class MainActivity extends WearableActivity {
     private static final SimpleDateFormat AMBIENT_DATE_FORMAT =
             new SimpleDateFormat("HH:mm", Locale.US);
 
-    private BoxInsetLayout mContainerView;
-    private TextView mTextView;
-    private TextView mClockView;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setAmbientEnabled();
 
-        mContainerView = (BoxInsetLayout) findViewById(R.id.container);
-        mTextView = (TextView) findViewById(R.id.text);
-        mClockView = (TextView) findViewById(R.id.clock);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            if (resultCode == RESULT_OK) {
+                // todo load twitter timeline
+            } else {
+                finish();
+            }
+        }
     }
 
     @Override
@@ -50,15 +60,15 @@ public class MainActivity extends WearableActivity {
 
     private void updateDisplay() {
         if (isAmbient()) {
-            mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
-            mTextView.setTextColor(getResources().getColor(android.R.color.white));
-            mClockView.setVisibility(View.VISIBLE);
+            binding.container.setBackgroundColor(getResources().getColor(android.R.color.black));
+            binding.text.setTextColor(getResources().getColor(android.R.color.white));
+            binding.clock.setVisibility(View.VISIBLE);
 
-            mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
+            binding.clock.setText(AMBIENT_DATE_FORMAT.format(new Date()));
         } else {
-            mContainerView.setBackground(null);
-            mTextView.setTextColor(getResources().getColor(android.R.color.black));
-            mClockView.setVisibility(View.GONE);
+            binding.container.setBackground(null);
+            binding.text.setTextColor(getResources().getColor(android.R.color.black));
+            binding.clock.setVisibility(View.GONE);
         }
     }
 }
