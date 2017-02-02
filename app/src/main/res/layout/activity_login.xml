@@ -8,6 +8,12 @@
         tools:context="com.github.ymegane.android.twitter.wear.LoginActivity"
         tools:deviceIds="wear">
 
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Login"/>
 
     </android.support.wearable.view.BoxInsetLayout>
 </layout>

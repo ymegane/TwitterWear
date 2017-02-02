@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     compileSdkVersion 25
@@ -9,6 +24,10 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "String", "OAUTH_ENDPOINT", project.property('OAUTH_ENDPOINT')
+        buildConfigField "String", "TWITTER_KEY", project.property('TWITTER_KEY')
+        buildConfigField "String", "TWITTER_SECRET", project.property('TWITTER_SECRET')
     }
     dataBinding {
         enabled = true
@@ -26,10 +45,12 @@ dependencies {
     compile 'com.google.android.support:wearable:2.0.0-beta2'
     compile 'com.google.android.gms:play-services-wearable:10.0.1'
     compile 'com.github.ymegane:dlog:1.0.1'
-    compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.android.gms:play-services-auth:10.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     provided 'com.google.android.wearable:wearable:2.0.0-beta2'
+    compile('com.twitter.sdk.android:twitter:2.3.1@aar') {
+        transitive = true;
+    }
 }
 
 

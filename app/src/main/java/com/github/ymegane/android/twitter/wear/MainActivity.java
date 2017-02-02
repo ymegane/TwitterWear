@@ -5,9 +5,19 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
+import android.widget.Toast;
 
+import com.github.ymegane.android.dlog.DLog;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.core.models.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +36,11 @@ public class MainActivity extends WearableActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setAmbientEnabled();
 
+        if (Twitter.getSessionManager().getActiveSession() == null) {
+            startActivityForResult(new Intent(this, LoginActivity.class), 100);
+        } else {
+            updateUserInfo();
+        }
     }
 
     @Override
@@ -34,6 +49,7 @@ public class MainActivity extends WearableActivity {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
                 // todo load twitter timeline
+                updateUserInfo();
             } else {
                 finish();
             }
@@ -70,5 +86,24 @@ public class MainActivity extends WearableActivity {
             binding.text.setTextColor(getResources().getColor(android.R.color.black));
             binding.clock.setVisibility(View.GONE);
         }
+    }
+
+    private void updateUserInfo() {
+        DLog.d("token=" + Twitter.getSessionManager().getActiveSession().getAuthToken().token);
+        TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
+        apiClient.getAccountService().verifyCredentials(true, true).enqueue(new Callback<User>() {
+            @Override
+            public void success(Result<User> result) {
+                DLog.d("name=" + result.data.name + "screenName=" + result.data.screenName + " id=" + result.data.id);
+                binding.text.setText(result.data.screenName);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                DLog.w(exception);
+                Twitter.logOut();
+                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), 100);
+            }
+        });
     }
 }
