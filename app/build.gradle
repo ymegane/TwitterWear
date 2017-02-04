@@ -25,10 +25,10 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField "String", "OAUTH_ENDPOINT", project.property('OAUTH_ENDPOINT')
-        buildConfigField "String", "TWITTER_KEY", project.property('TWITTER_KEY')
-        buildConfigField "String", "TWITTER_SECRET", project.property('TWITTER_SECRET')
-        resValue "string", "fabric_api_key", project.property('FABRIC_API_KEY')
+        buildConfigField "String", "OAUTH_ENDPOINT", "\"${OAUTH_ENDPOINT}\""
+        buildConfigField "String", "TWITTER_KEY", "\"${TWITTER_KEY}\""
+        buildConfigField "String", "TWITTER_SECRET", "\"${TWITTER_SECRET}\""
+        manifestPlaceholders = [fabric_api_key: "${FABRIC_API_KEY}"]
     }
     dataBinding {
         enabled = true
