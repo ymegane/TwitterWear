@@ -28,6 +28,7 @@ android {
         buildConfigField "String", "OAUTH_ENDPOINT", project.property('OAUTH_ENDPOINT')
         buildConfigField "String", "TWITTER_KEY", project.property('TWITTER_KEY')
         buildConfigField "String", "TWITTER_SECRET", project.property('TWITTER_SECRET')
+        resValue "string", "fabric_api_key", project.property('FABRIC_API_KEY')
     }
     dataBinding {
         enabled = true

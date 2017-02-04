@@ -53,7 +53,7 @@
         </service>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="XXXX" />
+            android:value="@string/fabric_api_key" />
     </application>
 
 </manifest>
