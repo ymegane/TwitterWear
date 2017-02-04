@@ -5,7 +5,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.github.ymegane.android.twitter.wear.LoginActivity"
+        tools:context="com.github.ymegane.android.twitter.wear.presentation.activity.LoginActivity"
         tools:deviceIds="wear">
 
         <Button

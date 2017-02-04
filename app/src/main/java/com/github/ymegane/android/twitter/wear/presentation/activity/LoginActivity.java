@@ -1,4 +1,4 @@
-package com.github.ymegane.android.twitter.wear;
+package com.github.ymegane.android.twitter.wear.presentation.activity;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.github.ymegane.android.dlog.DLog;
+import com.github.ymegane.android.twitter.wear.BuildConfig;
+import com.github.ymegane.android.twitter.wear.R;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityLoginBinding;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
