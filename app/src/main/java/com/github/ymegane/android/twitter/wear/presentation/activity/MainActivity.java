@@ -31,6 +31,27 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!presenter.isProcessing()) {
+            presenter.startUpdating();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.cancelUpdating();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.cancelUpdating();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
@@ -46,6 +67,7 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
     @Override
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
+        presenter.cancelUpdating();
         presenter.updateDisplay();
     }
 
@@ -58,6 +80,7 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
     @Override
     public void onExitAmbient() {
         presenter.updateDisplay();
+        presenter.startUpdating();
         super.onExitAmbient();
     }
 
@@ -66,6 +89,11 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
         return new TimeLinePresenter.TimelinePresenterEventListener() {
             @Override
             public void onGotUser(User user) {
+                presenter.showTimeLine();
+            }
+
+            @Override
+            public void onGotInitialTimeline() {
                 // do nothing
             }
         };

@@ -16,6 +16,6 @@ public class Tweets extends BaseObservable {
     public ObservableArrayList<Tweet> tweets;
 
     public void addTweets(List<Tweet> tweets) {
-        this.tweets.addAll(tweets);
+        this.tweets.addAll(0, tweets);
     }
 }

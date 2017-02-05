@@ -22,6 +22,13 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class TimeLinePresenter implements Presenter {
 
@@ -30,6 +37,11 @@ public class TimeLinePresenter implements Presenter {
     private final ActivityMainBinding binding;
 
     private TimelinePresenterEventListener listener;
+    private TimelineAdapter adapter;
+
+    private Disposable timelineUpdater;
+
+    private boolean isProcessing = false;
 
     public TimeLinePresenter(MainActivity activity, ActivityMainBinding binding) {
         this.activity = activity;
@@ -46,6 +58,8 @@ public class TimeLinePresenter implements Presenter {
     }
 
     public void showTimeLine() {
+        setProcessing(true);
+
         TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
         apiClient.getStatusesService().homeTimeline(30, null, null, false, false, false, false).enqueue(new Callback<List<Tweet>>() {
             @Override
@@ -54,9 +68,8 @@ public class TimeLinePresenter implements Presenter {
 
                 Tweets tweets = new Tweets();
                 tweets.addTweets(result.data);
-                binding.setTweets(tweets);
 
-                TimelineAdapter adapter = new TimelineAdapter(context, tweets) {
+                adapter = new TimelineAdapter(context, tweets) {
                     @Override
                     public void onItemClick(TimelineAdapter.ViewHolder holder, int position) {
                         super.onItemClick(holder, position);
@@ -64,11 +77,35 @@ public class TimeLinePresenter implements Presenter {
                 };
                 binding.recyclerTimeline.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
                 binding.recyclerTimeline.setAdapter(adapter);
+
+                startUpdating();
+                setProcessing(true);
             }
 
             @Override
             public void failure(TwitterException exception) {
                 DLog.w(exception);
+                setProcessing(false);
+            }
+        });
+    }
+
+    public void updateTimeline(long sinceId) {
+        setProcessing(true);
+        TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
+        apiClient.getStatusesService().homeTimeline(30, sinceId, null, false, false, false, false).enqueue(new Callback<List<Tweet>>() {
+            @Override
+            public void success(Result<List<Tweet>> result) {
+                DLog.printMethod();
+
+                adapter.addTweets(result.data);
+                setProcessing(false);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                DLog.w(exception);
+                setProcessing(false);
             }
         });
     }
@@ -83,6 +120,7 @@ public class TimeLinePresenter implements Presenter {
     }
 
     public void updateUserInfo() {
+        setProcessing(true);
         DLog.d("token=" + Twitter.getSessionManager().getActiveSession().getAuthToken().token);
         TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
         apiClient.getAccountService().verifyCredentials(true, true).enqueue(new Callback<User>() {
@@ -90,7 +128,7 @@ public class TimeLinePresenter implements Presenter {
             public void success(Result<User> result) {
                 DLog.d("name=" + result.data.name + " screenName=" + result.data.screenName + " id=" + result.data.id);
                 listener.onGotUser(result.data);
-                showTimeLine();
+                setProcessing(false);
             }
 
             @Override
@@ -98,8 +136,49 @@ public class TimeLinePresenter implements Presenter {
                 DLog.w(exception);
                 Twitter.logOut();
                 activity.startActivityForResult(new Intent(context, LoginActivity.class), 100);
+                setProcessing(false);
             }
         });
+    }
+
+    public void startUpdating() {
+        cancelUpdating();
+
+        timelineUpdater = Observable.interval(30, 10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        DLog.printMethod();
+
+                        if (adapter.getItemCount() == 0) {
+                            showTimeLine();
+                        } else {
+                            updateTimeline(adapter.getTweet(0).id);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        DLog.w(throwable);
+                    }
+                });
+    }
+
+    public void cancelUpdating() {
+        if (timelineUpdater != null) {
+            timelineUpdater.dispose();
+        }
+        timelineUpdater = null;
+    }
+
+    private void setProcessing(boolean processing) {
+        isProcessing = processing;
+    }
+
+    public boolean isProcessing() {
+        return isProcessing;
     }
 
     public interface TimelinePresenterObserver {
@@ -108,5 +187,6 @@ public class TimeLinePresenter implements Presenter {
 
     public interface TimelinePresenterEventListener {
         void onGotUser(User user);
+        void onGotInitialTimeline();
     }
 }

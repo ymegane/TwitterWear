@@ -12,6 +12,8 @@ import com.github.ymegane.android.twitter.wear.databinding.ItemTimelineBinding;
 import com.github.ymegane.android.twitter.wear.domain.entity.Tweets;
 import com.twitter.sdk.android.core.models.Tweet;
 
+import java.util.List;
+
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
@@ -44,6 +46,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
     @Override
     public int getItemCount() {
         return tweets.tweets.size();
+    }
+
+    public void addTweets(List<Tweet> tweets) {
+        int recentCount = getItemCount();
+        this.tweets.addTweets(tweets);
+        notifyItemRangeInserted(recentCount-1, tweets.size());
+    }
+
+    public Tweet getTweet(int position) {
+        return this.tweets.tweets.get(position);
     }
 
     public void onItemClick(ViewHolder holder, int position) {
