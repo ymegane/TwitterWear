@@ -3,10 +3,14 @@ package com.github.ymegane.android.twitter.wear.presentation.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.wearable.view.DefaultOffsettingHelper;
+import android.support.wearable.view.drawer.WearableActionDrawer;
+import android.view.MenuItem;
 
 import com.github.ymegane.android.dlog.DLog;
+import com.github.ymegane.android.twitter.wear.R;
 import com.github.ymegane.android.twitter.wear.presentation.activity.LoginActivity;
 import com.github.ymegane.android.twitter.wear.presentation.activity.MainActivity;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
@@ -55,6 +59,17 @@ public class TimeLinePresenter implements Presenter {
 
     private void initViews() {
         binding.recyclerTimeline.setOffsettingHelper(new DefaultOffsettingHelper());
+        binding.bottomDrawer.setShouldPeekOnScrollDown(true);
+        binding.bottomDrawer.setOnMenuItemClickListener(new WearableActionDrawer.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_tweet) {
+                    // todo tweet
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     public void showTimeLine() {
@@ -111,11 +126,10 @@ public class TimeLinePresenter implements Presenter {
     }
 
     public void updateDisplay() {
-        Resources resources = context.getResources();
         if (activity.isAmbient()) {
-            binding.container.setBackgroundColor(resources.getColor(android.R.color.black));
+            binding.drawerLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
         } else {
-            binding.container.setBackground(null);
+            binding.drawerLayout.setBackground(null);
         }
     }
 

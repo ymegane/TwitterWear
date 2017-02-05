@@ -6,9 +6,9 @@
             name="tweets"
             type="com.github.ymegane.android.twitter.wear.domain.entity.Tweets" />
     </data>
-    <android.support.wearable.view.BoxInsetLayout
+    <android.support.wearable.view.drawer.WearableDrawerLayout
+        android:id="@+id/drawer_layout"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.github.ymegane.android.twitter.wear.presentation.activity.MainActivity"
@@ -21,5 +21,17 @@
             android:scrollbars="vertical"
             />
 
-    </android.support.wearable.view.BoxInsetLayout>
+        <android.support.wearable.view.drawer.WearableNavigationDrawer
+            android:id="@+id/top_navigation_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <android.support.wearable.view.drawer.WearableActionDrawer
+            android:id="@+id/bottom_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_blue_dark"
+            app:action_menu="@menu/main"
+            app:show_overflow_in_peek="true"/>
+    </android.support.wearable.view.drawer.WearableDrawerLayout>
 </layout>
