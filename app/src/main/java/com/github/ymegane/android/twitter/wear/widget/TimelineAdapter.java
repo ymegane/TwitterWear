@@ -51,7 +51,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
     public void addTweets(List<Tweet> tweets) {
         int recentCount = getItemCount();
         this.tweets.addTweets(tweets);
-        notifyItemRangeInserted(recentCount-1, tweets.size());
+        notifyDataSetChanged();
+        onItemAdded(tweets.size()-1);
     }
 
     public Tweet getTweet(int position) {
@@ -59,6 +60,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
     }
 
     public void onItemClick(ViewHolder holder, int position) {
+
+    }
+
+    public void onItemAdded(int oldPosition) {
 
     }
 

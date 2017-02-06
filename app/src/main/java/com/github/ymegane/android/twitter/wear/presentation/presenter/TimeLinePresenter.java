@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.wearable.view.DefaultOffsettingHelper;
 import android.support.wearable.view.drawer.WearableActionDrawer;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.github.ymegane.android.dlog.DLog;
 import com.github.ymegane.android.twitter.wear.R;
@@ -87,6 +88,10 @@ public class TimeLinePresenter implements Presenter {
                     public void onItemClick(TimelineAdapter.ViewHolder holder, int position) {
                         super.onItemClick(holder, position);
                     }
+
+                    @Override
+                    public void onItemAdded(int oldPosition) {
+                    }
                 };
                 binding.recyclerTimeline.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
                 binding.recyclerTimeline.setAdapter(adapter);
@@ -101,17 +106,26 @@ public class TimeLinePresenter implements Presenter {
             public void failure(TwitterException exception) {
                 DLog.w(exception);
                 setProcessing(false);
+                binding.progress.setVisibility(View.GONE);
             }
         });
     }
 
-    public void updateTimeline(long sinceId) {
+    public void updateTimeline() {
+        if (adapter.getItemCount() == 0) {
+            showTimeLine();
+        } else {
+            updateTimeline(adapter.getTweet(0).id);
+        }
+    }
+
+    private void updateTimeline(long sinceId) {
         setProcessing(true);
         TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
-        apiClient.getStatusesService().homeTimeline(30, sinceId, null, false, false, false, false).enqueue(new Callback<List<Tweet>>() {
+        apiClient.getStatusesService().homeTimeline(50, sinceId, null, false, false, false, false).enqueue(new Callback<List<Tweet>>() {
             @Override
             public void success(Result<List<Tweet>> result) {
-                DLog.printMethod();
+                DLog.d("result count=" + result.data.size());
 
                 adapter.addTweets(result.data);
                 setProcessing(false);
@@ -167,12 +181,8 @@ public class TimeLinePresenter implements Presenter {
                     @Override
                     public void accept(Long aLong) throws Exception {
                         DLog.printMethod();
+                        updateTimeline();
 
-                        if (adapter.getItemCount() == 0) {
-                            showTimeLine();
-                        } else {
-                            updateTimeline(adapter.getTweet(0).id);
-                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -191,6 +201,12 @@ public class TimeLinePresenter implements Presenter {
 
     private void setProcessing(boolean processing) {
         isProcessing = processing;
+
+        if (processing) {
+            binding.progress.setVisibility(View.VISIBLE);
+        } else {
+            binding.progress.setVisibility(View.GONE);
+        }
     }
 
     public boolean isProcessing() {

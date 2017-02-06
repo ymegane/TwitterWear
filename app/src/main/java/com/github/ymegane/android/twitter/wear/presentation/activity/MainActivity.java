@@ -56,10 +56,13 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
-                // todo load twitter timeline
                 presenter.updateUserInfo();
             } else {
                 finish();
+            }
+        } else if (requestCode == 200) {
+            if (resultCode == RESULT_OK) {
+                presenter.updateTimeline();
             }
         }
     }
