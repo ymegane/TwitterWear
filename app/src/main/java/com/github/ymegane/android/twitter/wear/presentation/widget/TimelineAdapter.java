@@ -1,4 +1,4 @@
-package com.github.ymegane.android.twitter.wear.widget;
+package com.github.ymegane.android.twitter.wear.presentation.widget;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

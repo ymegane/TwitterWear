@@ -13,7 +13,8 @@ import com.github.ymegane.android.twitter.wear.R;
 import com.github.ymegane.android.twitter.wear.presentation.activity.MainActivity;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
 import com.github.ymegane.android.twitter.wear.domain.entity.Tweets;
-import com.github.ymegane.android.twitter.wear.widget.TimelineAdapter;
+import com.github.ymegane.android.twitter.wear.presentation.widget.MainNavigationDrawerAdapter;
+import com.github.ymegane.android.twitter.wear.presentation.widget.TimelineAdapter;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -56,6 +57,8 @@ public class TimeLinePresenter implements Presenter {
     }
 
     private void initViews() {
+        binding.topNavigationDrawer.setAdapter(new MainNavigationDrawerAdapter(context));
+
         binding.recyclerTimeline.setOffsettingHelper(new DefaultOffsettingHelper());
         binding.bottomDrawer.setShouldPeekOnScrollDown(true);
         binding.bottomDrawer.setOnMenuItemClickListener(new WearableActionDrawer.OnMenuItemClickListener() {
