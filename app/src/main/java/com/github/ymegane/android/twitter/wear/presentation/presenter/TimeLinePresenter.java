@@ -57,7 +57,7 @@ public class TimeLinePresenter implements Presenter {
     }
 
     private void initViews() {
-        binding.topNavigationDrawer.setAdapter(new MainNavigationDrawerAdapter(context));
+        binding.topNavigationDrawer.setAdapter(new MainNavigationDrawerAdapter(activity));
 
         binding.recyclerTimeline.setOffsettingHelper(new DefaultOffsettingHelper());
         binding.bottomDrawer.setShouldPeekOnScrollDown(true);

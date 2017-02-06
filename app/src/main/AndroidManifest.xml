@@ -40,6 +40,9 @@
         <activity android:name=".presentation.activity.TweetActivity"
                   android:exported="false"
                   android:theme="@android:style/Theme.DeviceDefault.Light" />
+        <activity android:name=".presentation.activity.ProfileActivity"
+                    android:exported="false"
+                    android:theme="@android:style/Theme.DeviceDefault.Light"/>
 
         <service android:name=".MyFirebaseInstanceIdService">
             <intent-filter>
