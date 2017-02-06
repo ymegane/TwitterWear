@@ -1,8 +1,6 @@
 package com.github.ymegane.android.twitter.wear.presentation.presenter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.wearable.view.DefaultOffsettingHelper;
@@ -11,7 +9,6 @@ import android.view.MenuItem;
 
 import com.github.ymegane.android.dlog.DLog;
 import com.github.ymegane.android.twitter.wear.R;
-import com.github.ymegane.android.twitter.wear.presentation.activity.LoginActivity;
 import com.github.ymegane.android.twitter.wear.presentation.activity.MainActivity;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
 import com.github.ymegane.android.twitter.wear.domain.entity.Tweets;
@@ -64,7 +61,8 @@ public class TimeLinePresenter implements Presenter {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.action_tweet) {
-                    // todo tweet
+                    binding.bottomDrawer.closeDrawer();
+                    listener.onClickTweet();
                     return true;
                 }
                 return false;
@@ -94,7 +92,9 @@ public class TimeLinePresenter implements Presenter {
                 binding.recyclerTimeline.setAdapter(adapter);
 
                 startUpdating();
-                setProcessing(true);
+                setProcessing(false);
+
+                listener.onGotInitialTimeline();
             }
 
             @Override
@@ -149,16 +149,18 @@ public class TimeLinePresenter implements Presenter {
             public void failure(TwitterException exception) {
                 DLog.w(exception);
                 Twitter.logOut();
-                activity.startActivityForResult(new Intent(context, LoginActivity.class), 100);
+
+                listener.onRequestLogin();
                 setProcessing(false);
             }
         });
     }
 
     public void startUpdating() {
+        DLog.printMethod();
         cancelUpdating();
 
-        timelineUpdater = Observable.interval(30, 10, TimeUnit.SECONDS)
+        timelineUpdater = Observable.interval(3, 3, TimeUnit.MINUTES)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Long>() {
@@ -202,5 +204,8 @@ public class TimeLinePresenter implements Presenter {
     public interface TimelinePresenterEventListener {
         void onGotUser(User user);
         void onGotInitialTimeline();
+
+        void onClickTweet();
+        void onRequestLogin();
     }
 }

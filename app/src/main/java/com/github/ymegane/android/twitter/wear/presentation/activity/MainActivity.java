@@ -96,6 +96,16 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
             public void onGotInitialTimeline() {
                 // do nothing
             }
+
+            @Override
+            public void onRequestLogin() {
+                startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class), 100);
+            }
+
+            @Override
+            public void onClickTweet() {
+                startActivityForResult(new Intent(getApplicationContext(), TweetActivity.class), 200);
+            }
         };
     }
 }
