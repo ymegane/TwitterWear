@@ -37,6 +37,7 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
 
         if (!presenter.isProcessing()) {
             presenter.startUpdating();
+            presenter.setSelectedDrawerItem(0);
         }
     }
 

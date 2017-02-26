@@ -239,6 +239,10 @@ public class TimeLinePresenter implements Presenter {
         }
     }
 
+    public void setSelectedDrawerItem(int position) {
+        binding.topNavigationDrawer.setCurrentItem(position, false);
+    }
+
     public boolean isProcessing() {
         return isProcessing;
     }
