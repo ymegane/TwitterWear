@@ -14,6 +14,7 @@ import com.twitter.sdk.android.core.models.User;
 public class MainActivity extends WearableActivity implements TimeLinePresenter.TimelinePresenterObserver {
 
     private TimeLinePresenter presenter;
+    private static final int REQUEST_CODE_LOGIN = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +25,7 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
         setAmbientEnabled();
 
         if (Twitter.getSessionManager().getActiveSession() == null) {
-            startActivityForResult(new Intent(this, LoginActivity.class), 100);
+            startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE_LOGIN);
         } else {
             presenter.updateUserInfo();
         }
@@ -54,15 +55,11 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100) {
+        if (requestCode == REQUEST_CODE_LOGIN) {
             if (resultCode == RESULT_OK) {
                 presenter.updateUserInfo();
             } else {
                 finish();
-            }
-        } else if (requestCode == 200) {
-            if (resultCode == RESULT_OK) {
-                presenter.updateTimeline();
             }
         }
     }
@@ -102,12 +99,7 @@ public class MainActivity extends WearableActivity implements TimeLinePresenter.
 
             @Override
             public void onRequestLogin() {
-                startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class), 100);
-            }
-
-            @Override
-            public void onClickTweet() {
-                startActivityForResult(new Intent(getApplicationContext(), TweetActivity.class), 200);
+                startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class), REQUEST_CODE_LOGIN);
             }
         };
     }

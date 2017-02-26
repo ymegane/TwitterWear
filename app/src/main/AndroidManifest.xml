@@ -39,9 +39,6 @@
             android:name=".presentation.activity.LoginActivity"
             android:exported="false"
             android:theme="@android:style/Theme.DeviceDefault.Light" />
-        <activity android:name=".presentation.activity.TweetActivity"
-                  android:exported="false"
-                  android:theme="@android:style/Theme.DeviceDefault.Light" />
         <activity android:name=".presentation.activity.ProfileActivity"
                     android:exported="false"
                     android:theme="@android:style/Theme.DeviceDefault.Light"/>

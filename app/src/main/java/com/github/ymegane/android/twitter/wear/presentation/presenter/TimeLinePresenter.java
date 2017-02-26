@@ -4,12 +4,13 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.wearable.view.DefaultOffsettingHelper;
-import android.support.wearable.view.drawer.WearableActionDrawer;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.ymegane.android.dlog.DLog;
-import com.github.ymegane.android.twitter.wear.R;
 import com.github.ymegane.android.twitter.wear.presentation.activity.MainActivity;
 import com.github.ymegane.android.twitter.wear.databinding.ActivityMainBinding;
 import com.github.ymegane.android.twitter.wear.domain.entity.Tweets;
@@ -61,15 +62,22 @@ public class TimeLinePresenter implements Presenter {
 
         binding.recyclerTimeline.setOffsettingHelper(new DefaultOffsettingHelper());
         binding.bottomDrawer.setShouldPeekOnScrollDown(true);
-        binding.bottomDrawer.setOnMenuItemClickListener(new WearableActionDrawer.OnMenuItemClickListener() {
+        binding.editTweet.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.action_tweet) {
-                    binding.bottomDrawer.closeDrawer();
-                    listener.onClickTweet();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    String text = v.getText().toString();
+                    postUpdate(text);
                     return true;
                 }
                 return false;
+            }
+        });
+        binding.buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.editTweet.setText("");
+                binding.bottomDrawer.closeDrawer();
             }
         });
     }
@@ -138,6 +146,25 @@ public class TimeLinePresenter implements Presenter {
             public void failure(TwitterException exception) {
                 DLog.w(exception);
                 setProcessing(false);
+            }
+        });
+    }
+
+    private void postUpdate(String message) {
+        TwitterApiClient apiClient = TwitterCore.getInstance().getApiClient();
+        apiClient.getStatusesService().update(message, null, true, null, null, null, false, false, null).enqueue(new Callback<Tweet>() {
+            @Override
+            public void success(Result<Tweet> result) {
+                binding.editTweet.setText("");
+                binding.editTweet.clearFocus();
+                binding.bottomDrawer.closeDrawer();
+                updateTimeline();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                DLog.w(exception);
+                Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -224,7 +251,6 @@ public class TimeLinePresenter implements Presenter {
         void onGotUser(User user);
         void onGotInitialTimeline();
 
-        void onClickTweet();
         void onRequestLogin();
     }
 }

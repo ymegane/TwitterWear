@@ -33,14 +33,48 @@
             android:id="@+id/top_navigation_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:navigation_style="multi_page"/>
+            app:navigation_style="single_page"/>
 
         <android.support.wearable.view.drawer.WearableActionDrawer
             android:id="@+id/bottom_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/holo_blue_dark"
-            app:action_menu="@menu/main"
-            app:show_overflow_in_peek="true"/>
+            app:drawer_content="@+id/drawer_content"
+            app:peek_view="@+id/peek_view"
+            app:show_overflow_in_peek="true">
+            <FrameLayout
+                android:id="@id/drawer_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/button_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_close_white_24dp"
+                    android:layout_gravity="center_horizontal"/>
+                <EditText
+                    android:id="@+id/edit_tweet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:inputType="text"
+                    android:imeOptions="actionSend"
+                    android:hint="@string/label_tweet"/>
+            </FrameLayout>
+            <LinearLayout
+                android:id="@id/peek_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_chat_bubble_outline_black_24dp"/>
+            </LinearLayout>
+        </android.support.wearable.view.drawer.WearableActionDrawer>
     </android.support.wearable.view.drawer.WearableDrawerLayout>
 </layout>

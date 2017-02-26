@@ -40,31 +40,27 @@ public class MainNavigationDrawerAdapter extends WearableNavigationDrawer.Wearab
         return ContextCompat.getDrawable(context, items.get(i).iconRes);
     }
 
-    Handler handler = new Handler(Looper.getMainLooper());
+    private int lastSelectedPosition = 0;
 
     @Override
     public void onItemSelected(final int i) {
-        // TODO need refactoring
-        handler.removeCallbacksAndMessages(null);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                switch (i) {
-                    case 0:
-                        activity.startActivity(new Intent(activity, MainActivity.class));
-                        break;
-                    case 1:
-                        activity.startActivity(new Intent(activity, ProfileActivity.class));
-                        break;
-                    case 2:
-                        activity.startActivity(new Intent(activity, AboutActivity.class));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }, 1000);
+        if (lastSelectedPosition == i) {
+            return;
+        }
+        switch (i) {
+            case 0:
+                activity.startActivity(new Intent(activity, MainActivity.class));
+                break;
+            case 1:
+                activity.startActivity(new Intent(activity, ProfileActivity.class));
+                break;
+            case 2:
+                activity.startActivity(new Intent(activity, AboutActivity.class));
+                break;
+            default:
+                break;
+        }
+        lastSelectedPosition = i;
     }
 
     @Override
